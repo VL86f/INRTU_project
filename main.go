@@ -9,8 +9,9 @@ import (
 	"strconv"
 	"math"
 	"strings"
+	"time"
 )
-func RGB_bit(completion,height,width int,name string,data ...byte) {
+func RGB_bit(completion,height,witdh int,name string,data ...byte) {
 	fmt.Println("24_bit Start")
 	name = strings.ReplaceAll(name, ".bmp", ".txt")
 		file2 ,err1 := os.Create(name)
@@ -19,19 +20,14 @@ func RGB_bit(completion,height,width int,name string,data ...byte) {
 		os.Exit(1)
 	}	
 	defer file2.Close()
-	var max_size int = len(data)
+	var max_size int = witdh * height
 	//fmt.Println("Completion: ", completion)
 	if height > 0 {
-		width_out := 0
-		step := 1
-		all := 0
-		//fmt.Println("maxsize: ", (max_size)/height)
-		//fmt.Println("D: ", width*3)
-		for x:=max_size-1;x>=0;x-- {
-			step++
-			if width_out == 0{
+		witdh_out := 0
+		for x:=max_size;x>0;x-- {
+			if witdh_out == 0{
 				//fmt.Println("Enter: ", x)
-				if x != max_size-1 {
+				if x != max_size {
 					//fmt.Println("Pressed: ", x)
 					_,err := io.WriteString(file2, "\n")
 						if err != nil {
@@ -41,31 +37,21 @@ func RGB_bit(completion,height,width int,name string,data ...byte) {
 				}
 				//fmt.Println("Skipped", completion)
 				x = x-completion
-				width_out = (width * 3)
-				step = 1
+				witdh_out = witdh
 				if completion != 0 {
-					fmt.Println("Skipped")
+					//fmt.Println("Skipped")
 					continue
 				}
 			}
-			z := strconv.Itoa(int(data[x])) + " "
+			z := strconv.Itoa(int(data[x*3-1])) + " "+ strconv.Itoa(int(data[x*3-2])) + " " +strconv.Itoa(int(data[x*3-3])) + " 255;"
 			_,err := io.WriteString(file2, z)
 			if err != nil {
 				panic(err)
 				os.Exit(1)
 			}	
-			if step == 3 {
-				step = 0
-				_,err := io.WriteString(file2, "255; ")
-				if err != nil {
-					panic(err)
-					os.Exit(1)
-				}	
-			}
-			width_out--
-			all++
+			witdh_out--
 		}	
-			fmt.Println("ALL: ", all)
+			//fmt.Println("ALL: ", all)
 	}	
 }	
 func dec_to_dec(data ...int) (int) {
@@ -134,19 +120,20 @@ func main() {
 	defer file.Close()
 	
 	data := make([]byte, 0)
-	buf := make([]byte, 1)	
+	buf := make([]byte, 54)
+	buf2 := make([]byte, 1024)
 	var i int
 	
-	for i = 0; i<54; i++ {
+	
 		wri, err := file.Read(buf)
 		if err == io.EOF { // если конец файла
-			break // выходим из цикла
+			fmt.Println("File is end")
 		}
 		
 	//	fmt.Print(data[:wri])
 		data = append(data, buf[:wri]...)
-	}
-	if i < 53 {
+	
+	if len(data) < 53 {
 		fmt.Println("Error.Invalid file type or file have very small size")
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
 		os.Exit(3)
@@ -214,19 +201,21 @@ func main() {
 		i = i+skip-palette
 	}
 	data = nil 
+	//buf2
 	//fmt.Println("Colors start bit:", i)
 	for ;true; {
-		wri, err := file.Read(buf)
+		wri, err := file.Read(buf2)
 		if err == io.EOF { // если конец файла
 			break // выходим из цикла
 		}
-		data = append(data, buf[:wri]...)
+		data = append(data, buf2[:wri]...)
 		
 	}
 	//fmt.Println(len(data))
 	fmt.Println("Data will be write in (R)ed(G)reen(B)lue(A)lpha format")
 	fmt.Print("Press Enter for continue\n")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	var time1 int64 = time.Now().Unix()
 	var completion int
 	switch(bit) {
 		case 32:
@@ -236,6 +225,8 @@ func main() {
 			fmt.Println("completion: ", completion)
 			RGB_bit(completion,height,witdh,name, data...)
 	}	
+	time1 = time.Now().Unix() - time1
+	fmt.Printf("Time: %d h, %d m, %d s\n", time1/3600, (time1%3600)/60, time1%60)
 //	RGB_bit(completion,height,witdh,name, data...)
 	fmt.Print("END. Press Enter for close programm\n")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
