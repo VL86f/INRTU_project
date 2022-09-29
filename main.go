@@ -13,8 +13,9 @@ import (
 )
 func RGB_bit(completion,height,witdh int,name string,data ...byte) {
 	fmt.Println("24_bit Start")
+	var comply int = completion * height
 	name = strings.ReplaceAll(name, ".bmp", ".txt")
-		file2 ,err1 := os.Create(name)
+	file2 ,err1 := os.Create(name)
 	if err1 != nil {
 		panic(err1)
 		os.Exit(1)
@@ -36,14 +37,11 @@ func RGB_bit(completion,height,witdh int,name string,data ...byte) {
 						}
 				}
 				//fmt.Println("Skipped", completion)
-				x = x-completion
 				witdh_out = witdh
-				if completion != 0 {
-					//fmt.Println("Skipped")
-					continue
+				comply = comply - completion
 				}
-			}
-			z := strconv.Itoa(int(data[x*3-1])) + " "+ strconv.Itoa(int(data[x*3-2])) + " " +strconv.Itoa(int(data[x*3-3])) + " 255;"
+			y := (x*3) + comply
+			z := strconv.Itoa(int(data[y-1])) + " "+ strconv.Itoa(int(data[y-2])) + " " +strconv.Itoa(int(data[y-3])) + " 255;"
 			_,err := io.WriteString(file2, z)
 			if err != nil {
 				panic(err)
