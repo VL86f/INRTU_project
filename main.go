@@ -11,10 +11,11 @@ import (
 	"strings"
 	"time"
 )
-func RGB_bit(completion,height,witdh int,name string,data ...byte) {
+func RGB_bit(completion,height,witdh int,name,name_out string,data ...byte) {
 	fmt.Println("24_bit Start")
 	var comply int = completion * height
-	name = strings.ReplaceAll(name, ".bmp", ".txt")
+	var k int
+	name = strings.ReplaceAll(name, name_out, ".txt")
 	file2 ,err1 := os.Create(name)
 	if err1 != nil {
 		panic(err1)
@@ -22,25 +23,22 @@ func RGB_bit(completion,height,witdh int,name string,data ...byte) {
 	}	
 	defer file2.Close()
 	var max_size int = witdh * height
-	//fmt.Println("Completion: ", completion)
 	if height > 0 {
 		witdh_out := 0
 		for x:=max_size;x>0;x-- {
 			if witdh_out == 0{
-				//fmt.Println("Enter: ", x)
 				if x != max_size {
-					//fmt.Println("Pressed: ", x)
 					_,err := io.WriteString(file2, "\n")
 						if err != nil {
 							panic(err)
 							os.Exit(1)
 						}
 				}
-				//fmt.Println("Skipped", completion)
 				witdh_out = witdh
 				comply = comply - completion
+				k = witdh-1
 				}
-			y := (x*3) + comply
+			y := (x-k)*3 + comply
 			z := strconv.Itoa(int(data[y-1])) + " "+ strconv.Itoa(int(data[y-2])) + " " +strconv.Itoa(int(data[y-3])) + " 255;"
 			_,err := io.WriteString(file2, z)
 			if err != nil {
@@ -48,8 +46,8 @@ func RGB_bit(completion,height,witdh int,name string,data ...byte) {
 				os.Exit(1)
 			}	
 			witdh_out--
+			k = k - 2 
 		}	
-			//fmt.Println("ALL: ", all)
 	}	
 }	
 func dec_to_dec(data ...int) (int) {
@@ -69,8 +67,7 @@ func dec_to_dec(data ...int) (int) {
 			pr = pr / 16
 		}
 		chisl = chisl + part
-	}
-//	fmt.Println("Chisl?", chisl) 
+	} 
 	ran = len(chisl)
 	for i:=0;i<ran;i++ {
 		x := 0
@@ -104,12 +101,9 @@ func main() {
 	fmt.Println("Name?")
 	fmt.Scanln(&name)
 	fmt.Println("Attention. This is test programm")
-//	file2 ,err1 := os.Create("exit.txt")
-//	if err1 != nil {
-//		fmt.Println(err1)
-//		os.Exit(1)
-//	}	
-//	defer file2.Close()
+	stri := strings.Split(name, ".")
+	k := len(stri)
+	var name_out string = "."+stri[k-1]
 	file, err := os.Open(name)
 	if err != nil {
 		panic(err)
@@ -128,7 +122,6 @@ func main() {
 			fmt.Println("File is end")
 		}
 		
-	//	fmt.Print(data[:wri])
 		data = append(data, buf[:wri]...)
 	
 	if len(data) < 53 {
@@ -184,23 +177,14 @@ func main() {
 	fmt.Printf("Сontour size: %d x %d\n", witdh, height)
 	fmt.Printf("Colors bit: %d bit\n", bit)
 	fmt.Printf("Skipped: %d byte\n", skip)
-	//for i = 0; i<skip; i++ {
-		//wri, err := file.Read(buf)
-		//if err == io.EOF { // если конец файла
-		//	break // выходим из цикла
-		//}
-		
-	//	fmt.Print(data[:wri])
-		//data = append(data, buf[:wri]...)
-	//}
+
 	var palette int = 0
 	if skip !=0 {
 		file.Seek(int64(skip-palette), 1)
 		i = i+skip-palette
 	}
 	data = nil 
-	//buf2
-	//fmt.Println("Colors start bit:", i)
+
 	for ;true; {
 		wri, err := file.Read(buf2)
 		if err == io.EOF { // если конец файла
@@ -209,7 +193,6 @@ func main() {
 		data = append(data, buf2[:wri]...)
 		
 	}
-	//fmt.Println(len(data))
 	fmt.Println("Data will be write in (R)ed(G)reen(B)lue(A)lpha format")
 	fmt.Print("Press Enter for continue\n")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
@@ -219,13 +202,12 @@ func main() {
 		case 32:
 			completion = 0
 		case 24:
-			completion = 3 * witdh % 4
+			completion = witdh % 4
 			fmt.Println("completion: ", completion)
-			RGB_bit(completion,height,witdh,name, data...)
+			RGB_bit(completion,height,witdh,name,name_out, data...)
 	}	
 	time1 = time.Now().Unix() - time1
 	fmt.Printf("Time: %d h, %d m, %d s\n", time1/3600, (time1%3600)/60, time1%60)
-//	RGB_bit(completion,height,witdh,name, data...)
-	fmt.Print("END. Press Enter for close programm\n")
+	fmt.Print("END.\nPress Enter for close programm\n")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
