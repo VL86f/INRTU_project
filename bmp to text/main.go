@@ -25,7 +25,7 @@ func RGB_bit(completion,height,witdh int,name,name_out string,data ...byte) {
 	var max_size int = witdh * height
 	if height > 0 {
 		witdh_out := 0
-		for x:=max_size;x>0;x-- {
+		for x:=0;x<max_size;x++ {
 			if witdh_out == 0{
 				if x != max_size {
 					_,err := io.WriteString(file2, "\n")
@@ -38,8 +38,9 @@ func RGB_bit(completion,height,witdh int,name,name_out string,data ...byte) {
 				comply = comply - completion
 				k = witdh-1
 				}
-			y := (x-k)*3 + comply
-			z := strconv.Itoa(int(data[y-1])) + " "+ strconv.Itoa(int(data[y-2])) + " " +strconv.Itoa(int(data[y-3])) + " 255;"
+			//y := (x-k)*3 + comply
+			y :=x*3
+			z := strconv.Itoa(int(data[y+2])) + " "+ strconv.Itoa(int(data[y+1])) + " " +strconv.Itoa(int(data[y])) + " 255;"
 			_,err := io.WriteString(file2, z)
 			if err != nil {
 				panic(err)
@@ -191,7 +192,6 @@ func main() {
 			break // выходим из цикла
 		}
 		data = append(data, buf2[:wri]...)
-		
 	}
 	fmt.Println("Data will be write in (R)ed(G)reen(B)lue(A)lpha format")
 	fmt.Print("Press Enter for continue\n")

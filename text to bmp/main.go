@@ -3,12 +3,12 @@ package main
 
 import (
 	"fmt"
-//	"io"
+	"io"
 	"os"
 	"bufio"
 	"strconv"
 	"math"
-//	"strings"
+	"strings"
 	"time"
 )
 
@@ -20,7 +20,6 @@ func dec_to_hex (variable, recom int) []byte {
 			hex = string(exa[y]) + hex
 			x = x / 16
 	}	
-	fmt.Println("hes: ", hex)
 	var chisl int = len(hex)
 	//var le int = int(chisl / 2) + chisl % 2
 	ch := make([]string, 0)
@@ -33,7 +32,6 @@ func dec_to_hex (variable, recom int) []byte {
 		ch = append(ch, chis)
 		x = x-2
 	}	
-	fmt.Println("ch: ", ch)
 	chisl = len(ch)
 	var i int
 	for x := 0; x<chisl; x++ {
@@ -89,16 +87,18 @@ func main() {
 	}
 	defer file.Close() 
 	var time1 int64 = time.Now().Unix()
-	//name = strings.ReplaceAll(name, ".txt", ".bmp")
-	 /*file2 ,err1 := os.Create(name)
+	name = strings.ReplaceAll(name, ".txt", ".bmp")
+	 file2 ,err1 := os.Create(name)
 	if err1 != nil {
 		panic(err1)
 		os.Exit(1)
 	}	
-	defer file2.Close() */
+	defer file2.Close() 
 	var size int = height * width * 3 + 54
 	//fmt.Println(size)
 	head := make([]byte, 0)
+	out := make([]byte, 0)
+	read := make([]byte, 1024)
 	head = append(head, 66,77)
 	
 	size_out := dec_to_hex(size, 4)
@@ -111,10 +111,65 @@ func main() {
 	head = append(head, 01,00,24)
 	for i := 0;i < 25;i++ {
 			head = append(head, 00)
+		}
+	readed := make([]byte, 0)
+	for ;true; {
+		wri, err := file.Read(read)
+		if err == io.EOF { // если конец файла
+			break // выходим из цикла
+		}
+		readed = append(readed, read[:wri]...)
+	}
+		/*for x := 0;x < 16;x++ {
+		//y := width*height*3-1-x
+		fmt.Print(" ", string(readed[x]))
+		}*/
+	var blok byte = 0
+	for i := 0;i<len(readed);i++{
+		cif := readed[i] 
+		switch(string(cif)) {
+			case " ":	
+				out = append(out, blok)
+				//fmt.Println("blok: ", blok)
+				blok = 0
+			case ";":
+				blok = 0
+			case "\n":
+				continue
+			case "0":
+				blok = blok * 10
+			default:
+				z, err := strconv.Atoi(string(cif))
+				if err != nil {
+					panic(err)
+					bufio.NewReader(os.Stdin).ReadBytes('\n')
+					os.Exit(5)
+				}
+				blok = blok * 10 + byte(z)
 		}	
-	fmt.Println(len(head))
-	fmt.Println(head)
-	
+	}	
+	cout := make([]byte, 0)
+	var compl int = width % 4
+	var wi = width
+//	var he = height-1
+	for x := 0;x < height*width*3; {
+		cout = append(cout, out[x+2])
+		cout = append(cout, out[x+1])
+		cout = append(cout, out[x])
+		x = x + 3
+		wi--
+		if wi <=0 {
+			for z := 0;z<compl;z++ {
+				cout = append(cout, 0)
+			}
+		wi = width
+//		he--
+		}	
+	}	
+	file2.Write(head)
+	file2.Write(cout)
+	//test := []byte{0,1,2,3}
+	//file2.Write(test)
 	time1 = time.Now().Unix() - time1
 	fmt.Printf("Time: %d h, %d m, %d s\n", time1/3600, (time1%3600)/60, time1%60)
 	fmt.Print("END.\nPress Enter for close programm\n")
