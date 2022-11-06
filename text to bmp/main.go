@@ -19,7 +19,7 @@ func dec_to_hex (variable, recom int) []byte {
 			y := x % 16
 			hex = string(exa[y]) + hex
 			x = x / 16
-	}	
+	}
 	var chisl int = len(hex)
 	//var le int = int(chisl / 2) + chisl % 2
 	ch := make([]string, 0)
@@ -31,7 +31,7 @@ func dec_to_hex (variable, recom int) []byte {
 		}
 		ch = append(ch, chis)
 		x = x-2
-	}	
+	}
 	chisl = len(ch)
 	var i int
 	for x := 0; x<chisl; x++ {
@@ -45,7 +45,7 @@ func dec_to_hex (variable, recom int) []byte {
 			case "D": i = 13
 			case "E": i = 14
 			case "F": i = 15
-			default: 
+			default:
 				z, err := strconv.Atoi(string(od[y]))
 				if err != nil {
 					panic(err)
@@ -55,19 +55,19 @@ func dec_to_hex (variable, recom int) []byte {
 				i = z
 			}
 			w = w + i * int(math.Pow(16, float64(len(od)-1-y)))
-		}	
+		}
 		ans = append(ans, byte(w))
-	}	
+	}
 
 	if len(ans)<recom {
 		df := recom-len(ans)
 		for i := 0;i < df;i++ {
 			ans = append(ans, 00)
-		}	
-	}	
+		}
+	}
 	return ans[:]
-	
-}	
+
+}
 
 
 func main() {
@@ -85,22 +85,22 @@ func main() {
 		panic(err)
 		os.Exit(1)
 	}
-	defer file.Close() 
+	defer file.Close()
 	var time1 int64 = time.Now().Unix()
 	name = strings.ReplaceAll(name, ".txt", ".bmp")
 	 file2 ,err1 := os.Create(name)
 	if err1 != nil {
 		panic(err1)
 		os.Exit(1)
-	}	
-	defer file2.Close() 
+	}
+	defer file2.Close()
 	var size int = height * width * 3 + 54
 	//fmt.Println(size)
 	head := make([]byte, 0)
 	out := make([]byte, 0)
 	read := make([]byte, 1024)
 	head = append(head, 66,77)
-	
+
 	size_out := dec_to_hex(size, 4)
 	head = append(head, size_out[:]...)
 	head = append(head, 00,00,00,00,54,00,00,00,40,00,00,00)
@@ -126,9 +126,9 @@ func main() {
 		}*/
 	var blok byte = 0
 	for i := 0;i<len(readed);i++{
-		cif := readed[i] 
+		cif := readed[i]
 		switch(string(cif)) {
-			case " ":	
+			case " ":
 				out = append(out, blok)
 				//fmt.Println("blok: ", blok)
 				blok = 0
@@ -146,8 +146,8 @@ func main() {
 					os.Exit(5)
 				}
 				blok = blok * 10 + byte(z)
-		}	
-	}	
+		}
+	}
 	cout := make([]byte, 0)
 	var compl int = width % 4
 	var wi = width
@@ -164,8 +164,8 @@ func main() {
 			}
 		wi = width
 //		he--
-		}	
-	}	
+		}
+	}
 	file2.Write(head)
 	file2.Write(cout)
 	//test := []byte{0,1,2,3}

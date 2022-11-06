@@ -20,7 +20,7 @@ func RGB_bit(completion,height,witdh int,name,name_out string,data ...byte) {
 	if err1 != nil {
 		panic(err1)
 		os.Exit(1)
-	}	
+	}
 	defer file2.Close()
 	var max_size int = witdh * height
 	if height > 0 {
@@ -45,12 +45,12 @@ func RGB_bit(completion,height,witdh int,name,name_out string,data ...byte) {
 			if err != nil {
 				panic(err)
 				os.Exit(1)
-			}	
+			}
 			witdh_out--
-			k = k - 2 
-		}	
-	}	
-}	
+			k = k - 2
+		}
+	}
+}
 func dec_to_dec(data ...int) (int) {
 	var ran int = len(data)
 	var ans int = 0
@@ -61,14 +61,14 @@ func dec_to_dec(data ...int) (int) {
 		part = ""
 		if data[i] == 0 {
 			part = "00"
-		}	
+		}
 		for pr:=data[i];pr>0; {
 			x := pr % 16
 			part = string(hex[x]) + part
 			pr = pr / 16
 		}
 		chisl = chisl + part
-	} 
+	}
 	ran = len(chisl)
 	for i:=0;i<ran;i++ {
 		x := 0
@@ -79,7 +79,7 @@ func dec_to_dec(data ...int) (int) {
 			case "D": x = 13
 			case "E": x = 14
 			case "F": x = 15
-			default: 
+			default:
 				z, err := strconv.Atoi(string(chisl[i]))
 				if err != nil {
 					panic(err)
@@ -87,11 +87,11 @@ func dec_to_dec(data ...int) (int) {
 					os.Exit(5)
 				}
 				x = z
-				
+
 		}
 		y := x * int(math.Pow(16, float64(ran-i-1)))
 		ans = ans+y
-	}	
+	}
 	return ans
 }
 
@@ -111,25 +111,25 @@ func main() {
 		os.Exit(1)
 	}
 	defer file.Close()
-	
+
 	data := make([]byte, 0)
 	buf := make([]byte, 54)
 	buf2 := make([]byte, 1024)
 	var i int
-	
-	
+
+
 		wri, err := file.Read(buf)
 		if err == io.EOF { // если конец файла
 			fmt.Println("File is end")
 		}
-		
+
 		data = append(data, buf[:wri]...)
-	
+
 	if len(data) < 53 {
 		fmt.Println("Error.Invalid file type or file have very small size")
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
 		os.Exit(3)
-	}	
+	}
 	if data[0] != 66 && data[1] != 77 && data[15] != 0 && data[16] != 0 {
 		fmt.Println("Error. Invalid file type")
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
@@ -158,7 +158,7 @@ func main() {
 		fmt.Println(data[28])
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
 		os.Exit(2)
-		
+
 	} else if data[30] != 0 && data[31] != 0 && data[32] !=0 && data[33] !=0 {
 		fmt.Println("Error. Data is compressed or encrypted")
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
@@ -184,7 +184,7 @@ func main() {
 		file.Seek(int64(skip-palette), 1)
 		i = i+skip-palette
 	}
-	data = nil 
+	data = nil
 
 	for ;true; {
 		wri, err := file.Read(buf2)
@@ -205,7 +205,7 @@ func main() {
 			completion = witdh % 4
 			fmt.Println("completion: ", completion)
 			RGB_bit(completion,height,witdh,name,name_out, data...)
-	}	
+	}
 	time1 = time.Now().Unix() - time1
 	fmt.Printf("Time: %d h, %d m, %d s\n", time1/3600, (time1%3600)/60, time1%60)
 	fmt.Print("END.\nPress Enter for close programm\n")
