@@ -14,27 +14,44 @@ func two_graph(c chan string, color_1 ,color_2 int,data  ...byte)  {
     var le int = len(data)/3
     var mn int = 256/8
     ans := make([][]int, mn)
+    var ans_out string =""
     for i := range ans {
         ans[i] = make([]int, mn)
     }
-    var opr int = 0
-    for x := 0;x<le;x++ {
-        i := x*3+color_1
-        kl := data[i]
-        for y :=0;<le;y++ {
-            j := x*3+color_2
-            k2 := data[j]
-            for q := 0;q<mn;q++ {
-                min_v := 0+4*opr
-                min_h := 0+4*q
-                max_v := 0+4*(opr+1)
-                max_h := 0+4(q+1)
 
+    for x := 0;x<le;x++ {
+        fmt.Println("Iteration ", x)
+        i := x*3+color_1
+        k1 := data[i]
+        for q := 0;q<mn;q++ {
+            min_v := 0+8*q
+            max_v := 0+8*(q+1)
+            if min_v<=int(k1) && int(k1)<max_v {
+                for y := 0;y<le;y++ {
+                    j := y*3+color_2
+                    k2 := data[j]
+                        for r := 0;r<mn;r++ {
+                            min_h := 0+8*r
+                            max_h := 0+8*(r+1)
+                            if min_h<=int(k2) && int(k2)<max_h {
+                                ans[q][r]++
+                                break
+                            }
+                        }
+                }
+                break
             }
         }
-        opr++
-    }
 
+    }
+    for x := 0;x<mn;x++ {
+        for y :=0;y<mn;y++ {
+            ans_out = ans_out + strconv.Itoa(ans[x][y]) + ";"
+        }
+        ans_out = ans_out + "\n"
+    }
+    fmt.Printf("Part %d and %d done\n", color_1, color_2)
+    c <- ans_out
 }
 
 
@@ -48,8 +65,8 @@ func one_graph(c chan string,color int,data   ...byte)  {
             i := x*3+color
             y = data[i]
             for k := 0;k<mn;k++ {
-                    min := 0 + 4*k
-                    max := 0 + 4*(k+1)
+                    min := 0 + 8*k
+                    max := 0 + 8*(k+1)
                     if min<=int(y) && int(y)<max {
                         ans[k]++
                         break
@@ -60,6 +77,7 @@ func one_graph(c chan string,color int,data   ...byte)  {
     for x := 0;x<mn;x++ {
         ans_out = ans_out + strconv.Itoa(ans[x]) + ";"
     }
+    fmt.Printf("Part %d done\n", color)
     c <- ans_out
 }
 
@@ -118,20 +136,24 @@ func main() {
         r chan string = make(chan string)
         g chan string = make(chan string)
         b chan string = make(chan string)
-        //rb chan string = make(chan string)
-        //rg chan string = make(chan string)
-        //bg chan string = make(chan string)
+        rb chan string = make(chan string)
+        rg chan string = make(chan string)
+        bg chan string = make(chan string)
     )
     go one_graph(r, 0, rgb...)
     go one_graph(g, 1, rgb...)
     go one_graph(b, 2, rgb...)
+    go two_graph(rb, 0, 2, rgb...)
+    go two_graph(rg, 0, 1, rgb...)
+    go two_graph(bg, 1, 2, rgb...)
 
     red := <- r
     green := <- g
     blue := <- b
-   // redgreen := <- rg
-    // redblue := <- rb
-    // greenblue := <- bg
+    redgreen := <- rg
+    redblue := <- rb
+    greenblue := <- bg
+
     time2 = time.Now().Unix() - tm
     fmt.Printf("Time: %d h, %d m, %d s\n", time2/3600, (time2%3600)/60, time2%60)
     fmt.Println("Writing")
@@ -149,7 +171,7 @@ func main() {
         }
     defer file2.Close()
     var header string = "Graphic step = 4\n"
-    var fileout string = header + "\n" + "RED:;" + red + "\nGREEN:;" + green + "\nBLUE:;" + blue
+    var fileout string = header + "\n" + "RED:;" + red + "\nGREEN:;" + green + "\nBLUE:;" + blue + "\nRED&GREEN:\n" + redgreen + "\nRED&BLUE:\n" + redblue + "\nGREEN&BLUE\n" + greenblue
     _, err1 := io.WriteString(file2, fileout)
 			if err != nil {
 				panic(err1)
