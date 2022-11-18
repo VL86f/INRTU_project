@@ -75,11 +75,12 @@ func main() {
 	var name string
 	fmt.Println("Name?")
 	fmt.Scanln(&name)
-	var height,width int
+	/*var height,width int
 	fmt.Println("Enter width and height")
-	fmt.Scan(&width, &height)
-	fmt.Println("Attention. This is test programm")
-	fmt.Printf("width and height: %dx%d\n", width, height)
+	fmt.Scan(&width, &height) */
+	out := make([]byte, 0)
+	read := make([]byte, 1024)
+	readed := make([]byte, 0)
 	file, err := os.Open(name)
 	if err != nil {
 		panic(err)
@@ -94,11 +95,27 @@ func main() {
 		os.Exit(1)
 	}
 	defer file2.Close()
+	for ;true; {
+		wri, err := file.Read(read)
+		if err == io.EOF { // если конец файла
+			break // выходим из цикла
+		}
+		readed = append(readed, read[:wri]...)
+	}
+		/*for x := 0;x < 16;x++ {
+		//y := width*height*3-1-x
+		fmt.Print(" ", string(readed[x]))
+		}*/
+	var height int = strings.Count(string(readed), "\n")
+    var width int = strings.Count(string(readed), ";")
+    width = width/height
+	fmt.Println("Attention. This is test programm")
+	fmt.Printf("width and height: %dx%d\n", width, height)
+	var blok byte = 0
+
 	var size int = height * width * 3 + 54
 	//fmt.Println(size)
 	head := make([]byte, 0)
-	out := make([]byte, 0)
-	read := make([]byte, 1024)
 	head = append(head, 66,77)
 
 	size_out := dec_to_hex(size, 4)
@@ -112,19 +129,8 @@ func main() {
 	for i := 0;i < 25;i++ {
 			head = append(head, 00)
 		}
-	readed := make([]byte, 0)
-	for ;true; {
-		wri, err := file.Read(read)
-		if err == io.EOF { // если конец файла
-			break // выходим из цикла
-		}
-		readed = append(readed, read[:wri]...)
-	}
-		/*for x := 0;x < 16;x++ {
-		//y := width*height*3-1-x
-		fmt.Print(" ", string(readed[x]))
-		}*/
-	var blok byte = 0
+
+
 	for i := 0;i<len(readed);i++{
 		cif := readed[i]
 		switch(string(cif)) {
