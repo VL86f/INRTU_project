@@ -71,10 +71,9 @@ func dec_to_hex (variable, recom int) []byte {
 
 
 func main() {
-for anf :=0;anf<255;anf++ {
-	var name string = "test-"+strconv.Itoa(anf)+".txt"
-	//fmt.Println("Name?")
-	//fmt.Scanln(&name)
+	var name string
+	fmt.Println("Name?")
+	fmt.Scanln(&name)
 	/*var height,width int
 	fmt.Println("Enter width and height")
 	fmt.Scan(&width, &height) */
@@ -181,7 +180,7 @@ for anf :=0;anf<255;anf++ {
 	//file2.Write(test)
 	 file.Close()
 	 file2.Close()
-}
+
 	//time1 = time.Now().Unix() - time1
 	//fmt.Printf("Time: %d h, %d m, %d s\n", time1/3600, (time1%3600)/60, time1%60)
 	fmt.Print("END.\nPress Enter for close programm\n")
