@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 using namespace std;
 
@@ -26,6 +27,7 @@ int main(int argc, char** argv) {
 	string file_in, file_out;
 	cout<<"Enter file name"<<endl;
 	getline(cin, file_in);
+	int x1,y1;
 	bool inf = false;
 	while(inf != true) {
 		cout<<"Enter type of mask: "<<endl;
@@ -64,35 +66,29 @@ int main(int argc, char** argv) {
 	else {
 	cout<<"Error. File not found."<<endl;
 	}
-	cout<<"1"<<endl;
+	cout<<"Reading"<<endl;
 	int count = strlen(line.c_str());
 	char sin[count];
 	line.copy(sin, count);
-	cout<<"2 "<<count<<endl;
+	cout<<"Converting "<<endl;
 	int height = sim(line.c_str(), '\n');
 	//height++;
 	int width = sim(line.c_str(), ';');
 	width=width/height;
 	cout<<width<<" "<<height<<endl;
-	//int input[height][width*3];
-	int** input = new int*[height+2];
-	for (int x=0; x<height+2; x++) {
-		input[x] = new int[(width+2)*3];
+	//int image[height][width*3];
+	int** input = new int*[height];
+	for (int x=0; x<height; x++) {
+		input[x] = new int[width*3];
 	}
+
+	int** image = new int*[height+2];
 	for (int x=0; x<height+2; x++) {
-		for (int y=0; y<(width+2)*3; y++) {
-			/*if ((x==0)||(x==(height+1))||(y<3)||(y>=(width*3+3))) {
-					input[x][y]=127;
-			}
-			else {
-				input[x][y]=0;
-			} */
-			input[x][y]=0;
-		}
+		image[x] = new int[width+2];
 	}
-	int w=3;
-	int h=1;
-	int y=0;
+
+	int w=0;
+	int h=0;
 	int z=0;
 	int zz=0;
 	char simb;
@@ -116,7 +112,7 @@ int main(int argc, char** argv) {
 			//input[h][w]=y;
 			//y=0;
 			zz=0;
-			w=3;
+			w=0;
 			h++;
 		}
 		else {
@@ -125,6 +121,46 @@ int main(int argc, char** argv) {
 		}
 		//cout<<"W= "<<w<<"H= "<<h<<endl;
 	}
+	cout<<"Convert to Grey"<<endl;
+	for(int x=1; x<height+1; x++) {
+		for(int y=1; y<width+1; y++) {
+			x1 = x-1;
+			y1 = y-1;
+			image[x][y] = ceil((double(input[x1][3*y1])*0.2126)+(double(input[x1][3*y1+1])*0.7152)+(double(input[x1][3*y1+2])*0.0722)+0.5);
+		}
+	}
+	cout<<"Create the ram"<<endl;
+		for (int x=0; x<height+2; x++) {
+		for (int y=0; y<width+2; y++) {
+			if ((x==0)||(x==(height+1))) {
+				//cout<<"x= "<<x<<" 1"<<endl;
+					if (x==0) {
+						image[x][y]=image[x+1][y];
+						//image[x][y]=127;
+					}
+					else {
+						image[x][y]=image[x-1][y];
+						//image[x][y]=127;
+					}
+			}
+			else if ((y==0)||(y==width+1)) {
+				//cout<<"y= "<<y<<" 2"<<endl;
+					if(y==0) {
+						image[x][y]=image[x][y+1];
+						//image[x][y]=127;
+					}
+					else {
+						image[x][y]=image[x][y-1];
+						//image[x][y];
+					}
+			}
+			//image[x][y]=0;
+		}
+	}
+	image[0][0]=(image[1][0]+image[0][1])/2;
+	image[0][width+1]=(image[0][width]+image[1][width+1])/2;
+	image[height+1][0]=(image[height+1][1]+image[height][0])/2;
+	image[height+1][width+1]=(image[height][width+1]+image[height+1][width])/2;
 
 int mask[3][3] = {
 	{1, 1, 1},
@@ -136,23 +172,23 @@ int mask[3][3] = {
 int form[3][3];
 output.open(file_out);
 
+cout<<"Calculating & out"<<endl;
+
 int sub;
-int x1;
-int y1;
 int sum_x = 0, sum_y = 0, sum_al;
 for (int x = 0; x < height; x++) {
-	for (int y = 0 ; y < width*3; y++) {
+	for (int y = 0 ; y < width; y++) {
 		x1 = x+1;
-		y1 = y+3;
-		sub = input[x1][y1];
-		form[0][1] = input[x1-1][y1];
-		form[2][1] = input[x1+1][y1];
-		form[0][0] = input[x1-1][y1-3];
-		form[1][0] = input[x1][y1-3];
-		form[2][0] = input[x1+1][y1-3];
-		form[0][2] = input[x1-1][y1+3];
-		form[1][2] = input[x1][y1+3];
-		form[2][2] = input[x1+1][y1+3];
+		y1 = y+1;
+		sub = image[x1][y1];
+		form[0][1] = image[x1-1][y1];
+		form[2][1] = image[x1+1][y1];
+		form[0][0] = image[x1-1][y1-1];
+		form[1][0] = image[x1][y1-1];
+		form[2][0] = image[x1+1][y1-1];
+		form[0][2] = image[x1-1][y1+1];
+		form[1][2] = image[x1][y1+1];
+		form[2][2] = image[x1+1][y1+1];
 		sum_x = (form[0][0]*mask[mas][0]+form[0][1]*mask[mas][1]+form[0][2]*mask[mas][2])-(form[2][0]*mask[mas][0]+form[2][1]*mask[mas][1]+form[2][2]*mask[mas][2]);
 		sum_y = (form[0][0]*mask[mas][0]+form[1][0]*mask[mas][1]+form[2][0]*mask[mas][2])-(form[2][2]*mask[mas][0]+form[1][2]*mask[mas][1]+form[0][2]*mask[mas][2]);
 		sum_al = abs(sum_x)+abs(sum_y);
@@ -162,13 +198,11 @@ for (int x = 0; x < height; x++) {
 		else if (sum_al<0) {
 			sum_al=0;
 		}
-		output<<sum_al<<" ";
-		if (y%3==2) {
-			output<<"255;";
-		}
+		output<<sum_al<<" "<<sum_al<<" "<<sum_al<<" 255;";
 	}
 	output<<endl;
 }
+cout<<"Closing"<<endl;
 	in.close();
 	output.close();
 	return 0;
