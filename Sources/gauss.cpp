@@ -40,7 +40,6 @@ void calculate_picture (int sigmasize, int width, int height, int** input, int**
 		GaussKernel[x] = new double[sigmasize];
 	}
 	double sum = create_gauss_kernel(sigmasize, GaussKernel, sigma);
-	cout<<"sum = "<<sum<<endl;
 
 	int k,l,al_sum,a1,b1;
 	//create_gauss_kernel(sigmasize, GaussKernel, sigma);
@@ -108,7 +107,7 @@ int main(int argc, char** argv) {
 	//height++;
 	int width = sim(line.c_str(), ';');
 	width=width/height;
-	cout<<width<<" "<<height<<endl;
+	cout<<"width: "<<width<<" "<<"height: "<<height<<endl;
 	//int image[height][width*3];
 	int** input = new int*[height];
 	for (int x=0; x<height; x++) {
@@ -172,38 +171,74 @@ int main(int argc, char** argv) {
 			image[x1][y1] = ceil((double(input[x][3*y])*0.2126)+(double(input[x][3*y+1])*0.7152)+(double(input[x][3*y+2])*0.0722)+0.5);
 		}
 	}
-	cout<<"Create the ram : DISABLED"<<endl;
-	/*	for (int x=0; x<height+2; x++) {
-		for (int y=0; y<width+2; y++) {
-			if ((x==0)||(x==(height+1))) {
-				//cout<<"x= "<<x<<" 1"<<endl;
-					if (x==0) {
-						image[x][y]=image[x+1][y];
-						//image[x][y]=127;
-					}
-					else {
-						image[x][y]=image[x-1][y];
-						//image[x][y]=127;
-					}
-			}
-			else if ((y==0)||(y==width+1)) {
-				//cout<<"y= "<<y<<" 2"<<endl;
-					if(y==0) {
-						image[x][y]=image[x][y+1];
-						//image[x][y]=127;
-					}
-					else {
-						image[x][y]=image[x][y-1];
-						//image[x][y];
-					}
-			}
-			//image[x][y]=0;
+	cout<<"Create the ram"<<endl;
+	int halfsize = sigmasize/2;
+	int allsizex = height+sigmasize-1;
+	int allsizey = width+sigmasize-1;
+	x1 = 1;
+
+	for (int x=0; x<halfsize+1; x++) {//work
+		for(int y=halfsize;y<allsizey-sigmasize+halfsize+1;y++) {
+			image[x][y] = image[sigmasize-1-x][y];
+		}
+
+	}
+	for (int x=halfsize; x<allsizex-sigmasize+halfsize+1; x++) {
+		for(int y=0;y<halfsize+1;y++) {//work
+			image[x][y] = image[x][sigmasize-1-y];
+		}
+
+	}
+	for(int x = allsizex-halfsize;x<allsizex;x++){ // work
+		for(int y=halfsize;y<allsizey-sigmasize+halfsize+1;y++){
+			image[x][y] = image[allsizex-halfsize-x1][y];
+		}
+		x1++;
+	}
+
+	for(int x = halfsize;x<allsizex-sigmasize+halfsize+1;x++){
+		y1=1;
+		for(int y=allsizey-halfsize;y<allsizey+1;y++){
+			image[x][y] = image[x][allsizey-halfsize-y1];
+			y1++;
 		}
 	}
-	image[0][0]=(image[1][0]+image[0][1])/2;
-	image[0][width+1]=(image[0][width]+image[1][width+1])/2;
-	image[height+1][0]=(image[height+1][1]+image[height][0])/2;
-	image[height+1][width+1]=(image[height][width+1]+image[height+1][width])/2; */
+
+
+	for(int x=0; x<halfsize; x++) {
+		for(int y=0; y<halfsize; y++) {
+			image[x][y] = image[sigmasize-1-x][sigmasize-1-y];
+		}
+	}
+
+	x1=1;
+
+	for(int x=allsizex-halfsize;x<allsizex;x++) {
+		y1=1;
+		for(int y=allsizey-halfsize;y<allsizey;y++) {
+			image[x][y] = image[allsizex-halfsize-x1][allsizey-halfsize-y1];
+			y1++;
+		}
+		x1++;
+	}
+
+	for(int x=0; x<halfsize; x++) {
+		y1=1;
+		for(int y=allsizey-halfsize;y<allsizey;y++) {
+			image[x][y] = image[sigmasize-1-x][allsizey-halfsize-y1];
+			y1++;
+		}
+	}
+
+	x1 = 1;
+
+	for(int x=allsizex-halfsize;x<allsizex;x++) {
+		for(int y=0; y<halfsize; y++) {
+			image[x][y] = image[allsizex-halfsize-x1][sigmasize-1-y];
+		}
+		x1++;
+	}
+
 
 cout<<"Calculating"<<endl;
 
