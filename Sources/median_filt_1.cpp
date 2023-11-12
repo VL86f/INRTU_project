@@ -53,6 +53,8 @@ int main(int argc, char** argv) {
 	}
 	else {
 	cout<<"Error. File not found."<<endl;
+	in.close();
+	exit(1);
 	}
 	cout<<"1"<<endl;
 	int count = strlen(line.c_str());
