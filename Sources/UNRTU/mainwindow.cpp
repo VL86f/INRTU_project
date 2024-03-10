@@ -115,7 +115,7 @@ void MainWindow::on_ActionButton_clicked()
     //std::cout<<incalc<<std::endl;
 
     int count = strlen(incalc.c_str());
-    char sin[count];
+    char* sin = new char[count];
     incalc.copy(sin, count);
     //int height = sim(incalc.c_str(), '\n');
     //int width = sim(incalc.c_str(), ';');
