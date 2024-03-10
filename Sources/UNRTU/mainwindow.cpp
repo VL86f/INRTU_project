@@ -9,6 +9,7 @@
 
 
 #include <string.h>
+#include <qstring.h>
 #include <iostream>
 #include <unistd.h>
 
@@ -17,6 +18,7 @@ QString intext = "";
 QString wait = "Waiting";
 int resid = 0;
 
+using namespace std;
 
 int sim(std::string in, char ss) {
     int co = count(in.begin(), in.end(), ss);
@@ -140,7 +142,8 @@ void MainWindow::on_ActionButton_clicked()
             zz=0;
             min = 1;
             symbol = director(vect);
-            Outcalc = Outcalc + symbol;
+            //Outcalc = Outcalc + symbol;
+            Outcalc.append(symbol);
            // ui->textView->setText(Outcalc);
             //std::cout<<x<<std::endl;
 
@@ -148,12 +151,14 @@ void MainWindow::on_ActionButton_clicked()
         else if (sin[x]=='\n') {
             //input[h][w]=y;
             //y=0;
-            Outcalc = Outcalc + '\n';
+            //Outcalc = Outcalc + '\n';
+            Outcalc.append('\n');
             zz=0;
         }
         else if (sin[x]==' ') {
             zz=0;
-            Outcalc = Outcalc + " ";
+            //Outcalc = Outcalc + " ";
+            Outcalc.append(" ");
         }
         else {
 
