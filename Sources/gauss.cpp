@@ -2,7 +2,6 @@
 #include <fstream>
 #include <cstring>
 #include <algorithm>
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -62,21 +61,14 @@ void calculate_picture (int sigmasize, int width, int height, int** input, int**
 
 }
 
-int main(int argc, char** argv) {
+void gauss_fliter_func( int width, int height, int** input, int** output, double sigma) {
 //	cout<<"hello"<<endl;
 	string line;
-	ifstream in;
-	ofstream output;
+
 	int mas;
 	char cmas;
-	double sigma;
 	int sigmasize;
-	string outs = "-Gauss.txt";
-	string file_in, file_out;
-	cout<<"Enter file name"<<endl;
-	getline(cin, file_in);
-	cout<<"Enter the sigma value:"<<endl;
-	cin>>sigma;
+
 	//sigma = 0.84089642;
 	int x1,y1;
 
@@ -85,36 +77,6 @@ int main(int argc, char** argv) {
 		sigmasize++;
 	}
 
-	file_out = file_in;
-	int dots = file_in.find('.');
-	if (dots > 0){
-		file_out.erase(dots,4);
-	}
-	file_out = file_out + outs;
-	in.open(file_in);
-	if (in.is_open()) {
-	getline(in, line, '\0');
-	}
-	else {
-	cout<<"Error. File not found."<<endl;
-	in.close();
-	exit(1);
-	}
-	cout<<"Reading"<<endl;
-	int count = strlen(line.c_str());
-	char sin[count];
-	line.copy(sin, count);
-	cout<<"Converting "<<endl;
-	int height = sim(line.c_str(), '\n');
-	//height++;
-	int width = sim(line.c_str(), ';');
-	width=width/height;
-	cout<<"width: "<<width<<" "<<"height: "<<height<<endl;
-	//int image[height][width*3];
-	int** input = new int*[height];
-	for (int x=0; x<height; x++) {
-		input[x] = new int[width*3];
-	}
 
 	int** image = new int*[height+sigmasize-1];
 	for (int x=0; x<height+sigmasize-1; x++) {
@@ -130,47 +92,12 @@ int main(int argc, char** argv) {
 		image_out[x] = new int[width];
 	}
 
-
-	int w=0;
-	int h=0;
-	int z=0;
-	int zz=0;
-	char simb;
-	for (int x=0;x<count;x++) {
-		if (isdigit(sin[x])) {
-			//cout<<"chislo"<<endl;
-			z = sin[x]-'0';
-			zz=zz*10+z;
-		}
-		else if (sin[x]==' ') {
-			input[h][w]=zz;
-			zz=0;
-				//cout<<"Enter "<<endl;
-				//cout<<"X= "<<x<<endl;
-				//input[h][w]=y;
-				//cout<<"Y "<<y<<endl;
-				//y=0;
-				w++;
-		}
-		else if (sin[x]=='\n') {
-			//input[h][w]=y;
-			//y=0;
-			zz=0;
-			w=0;
-			h++;
-		}
-		else {
-			//cout<<"Other"<<endl;
-			zz=0;
-		}
-		//cout<<"W= "<<w<<"H= "<<h<<endl;
-	}
-	cout<<"Convert to Grey"<<endl;
+	cout<<"extend"<<endl;
 	for(int x=0; x<height; x++) {
 		for(int y=0; y<width; y++) {
 			x1 = x+sigmasize/2;
 			y1 = y+sigmasize/2;
-			image[x1][y1] = ceil((double(input[x][3*y])*0.2126)+(double(input[x][3*y+1])*0.7152)+(double(input[x][3*y+2])*0.0722)+0.5);
+			image[x1][y1] = input[x][y];
 		}
 	}
 	cout<<"Create the ram"<<endl;
@@ -244,25 +171,128 @@ int main(int argc, char** argv) {
 
 cout<<"Calculating"<<endl;
 
-calculate_picture(sigmasize, width, height, image, image_out, sigma);
+calculate_picture(sigmasize, width, height, image, output, sigma);
 
 
-
-
-cout<<"Create output file"<<endl;
-
-output.open(file_out);
-
-cout<<"Write file"<<endl;
-for(int x=0;x<height;x++) {
-	for(int y=0;y<width;y++) {
-		output<<image_out[x][y]<<" "<<image_out[x][y]<<" "<<image_out[x][y]<<" 255;";
-	}
-	output<<endl;
 }
 
-cout<<"Closing files"<<endl;
+int main(int argc, char** argv) {
+//	cout<<"hello"<<endl;
+	string line;
+	ifstream in;
+	ofstream output;
+	int mas;
+	char cmas;
+	double sigma;
+	//string outs[3] = {"-Previtt.txt", "-Sobel.txt", "-Shaar.txt"};
+	string file_in, file_out, file_s;
+	cout<<"Enter file name"<<endl;
+	getline(cin, file_in);
+	cout<<"Enter the sigma value:"<<endl;
+	cin>>sigma;
+
+	file_s = file_in;
+	int dots = file_in.find('.');
+	if (dots > 0){
+		file_s.erase(dots,4);
+	}
+	//file_out = file_out + outs[mas];
+	in.open(file_in);
+	if (in.is_open()) {
+	getline(in, line, '\0');
+	}
+	else {
+	cout<<"Error. File not found."<<endl;
 	in.close();
+	exit(1);
+	}
+	cout<<"Reading"<<endl;
+	int count = strlen(line.c_str());
+	char sin[count];
+	line.copy(sin, count);
+	cout<<"Converting "<<endl;
+	int height = sim(line.c_str(), '\n');
+	//height++;
+	int width = sim(line.c_str(), ';');
+	width=width/height;
+	cout<<width<<" "<<height<<endl;
+	//int image[height][width*3];
+	int** input = new int*[height];
+	for (int x=0; x<height; x++) {
+		input[x] = new int[width*3];
+	}
+
+	int** image = new int*[height];
+	for (int x=0; x<height+2; x++) {
+		image[x] = new int[width];
+	}
+
+	int** text_out = new int*[height];
+	for (int x=0; x<height+2; x++) {
+		text_out[x] = new int[width];
+	}
+
+	int w=0;
+	int h=0;
+	int z=0;
+	int zz=0;
+	char simb;
+	for (int x=0;x<count;x++) {
+		if (isdigit(sin[x])) {
+			//cout<<"chislo"<<endl;
+			z = sin[x]-'0';
+			zz=zz*10+z;
+		}
+		else if (sin[x]==' ') {
+			input[h][w]=zz;
+			zz=0;
+				//cout<<"Enter "<<endl;
+				//cout<<"X= "<<x<<endl;
+				//input[h][w]=y;
+				//cout<<"Y "<<y<<endl;
+				//y=0;
+				w++;
+		}
+		else if (sin[x]=='\n') {
+			//input[h][w]=y;
+			//y=0;
+			zz=0;
+			w=0;
+			h++;
+		}
+		else {
+			//cout<<"Other"<<endl;
+			zz=0;
+		}
+		//cout<<"W= "<<w<<"H= "<<h<<endl;
+	}
+	cout<<"Convert to Grey"<<endl;
+	for(int x=0; x<height; x++) {
+		for(int y=0; y<width; y++) {
+			image[x][y] = ceil((double(input[x][3*y])*0.2126)+(double(input[x][3*y+1])*0.7152)+(double(input[x][3*y+2])*0.0722)-0.5);
+			//cout<<image[x][y]<<" ";
+
+		}
+		cout<<endl;
+	}
+
+gauss_fliter_func(width, height, image, text_out, sigma);
+
+	file_out = file_s +"-Gauss.txt";
+	output.open(file_out);
+
+	for (int x=0; x<height; x++) {
+		for (int y=0; y<width; y++) {
+			output<<text_out[x][y]<<" "<<text_out[x][y]<<" "<<text_out[x][y]<<" 255;";
+		}
+		output<<endl;
+	}
+
 	output.close();
+
+
+cout<<"Closing"<<endl;
+	in.close();
+	//output.close();
 	return 0;
 }
