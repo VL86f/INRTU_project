@@ -29,6 +29,17 @@ examples&resources - примеры результатов работы неко
 3) ввести полное имя файла
 4) ввести дополнительные данные если они потребуются
 
+Сборка
+
+Для всех проектов:
+
+cd Sources
+g++ -static %filename%
+
+Для оператора Кенни
+
+cd ./Sources/Canny
+g++ -static main.cpp Canny.cpp
 
 This repository was created for the works on the subject "Project Activity" of Irkutsk National Research Technical University
 
@@ -75,3 +86,15 @@ Instructions
 3) enter the full name of the file
 
 4) enter additional data if required
+
+Building
+
+For all projects:
+
+cd ./Sources
+g++ -static %filename%
+
+For Canny edge detection project:
+
+cd ./Sources/Canny
+g++ -static main.cpp Canny.cpp
