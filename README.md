@@ -41,6 +41,8 @@ g++ -static %filename%
 cd ./Sources/Canny
 g++ -static main.cpp Canny.cpp
 
+Данный проект перенесён на платформу GitFlic:  https://gitflic.ru/project/vl86f/inrtu_project
+
 This repository was created for the works on the subject "Project Activity" of Irkutsk National Research Technical University
 
 
@@ -98,3 +100,6 @@ For Canny edge detection project:
 
 cd ./Sources/Canny
 g++ -static main.cpp Canny.cpp
+
+
+this project replaced on GitFlic platform: https://gitflic.ru/project/vl86f/inrtu_project
